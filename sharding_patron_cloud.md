@@ -7,23 +7,6 @@
 > Catálogo de referencia: [Azure Architecture Center — Sharding Pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/sharding)
 > Categoría: *Data Management* · Atributos de calidad: **Escalabilidad, Disponibilidad**
 
----
-
-## Índice
-
-1. [Contexto: por qué el módulo necesita sharding](#1-contexto-por-qué-el-módulo-necesita-sharding)
-2. [¿Qué es sharding?](#2-qué-es-sharding)
-3. [Sharding vs Replicación](#3-sharding-vs-replicación)
-4. [La función de enrutamiento](#4-la-función-de-enrutamiento)
-5. [Qué es N y cómo actúa](#5-qué-es-n-y-cómo-actúa)
-6. [El hash: huella determinista, no azar](#6-el-hash-huella-determinista-no-azar)
-7. [Tres estrategias de reparto](#7-tres-estrategias-de-reparto)
-8. [El punto débil: re-balanceo](#8-el-punto-débil-re-balanceo)
-9. [La solución: hashing consistente](#9-la-solución-hashing-consistente)
-10. [Demo en terminal](#10-demo-en-terminal)
-11. [Requisitos y ejecución](#11-requisitos-y-ejecución)
-
----
 
 ## 1. Contexto: por qué el módulo necesita sharding
 
@@ -224,21 +207,10 @@ Esto es lo que usan internamente **Redis Cluster** (con 16 384 hash slots), Cass
 
 La demo tiene dos scripts Python que ilustran el patrón y su limitación.
 
-### `sharding_demo.py` — cómo funciona el patrón
+### `sharding_demo.py` 
 
 ```python
-"""
-Demo del patrón Cloud "Sharding" aplicado al módulo de caché de RutaSegura.
 
-Estrategia: sharding del lado de la aplicación.
-La aplicación decide en qué nodo vive cada clave:
-
-        nodo = hash("reportes:{zona}") % N
-
-Uso:
-    python sharding_demo.py            # modo real (necesita 3 Redis)
-    python sharding_demo.py --simulado # modo simulado (sin Redis)
-"""
 
 import argparse
 import hashlib
@@ -425,11 +397,10 @@ if __name__ == "__main__":
 
 ---
 
-### `rebalanceo.py` — el costo de cambiar N
+### `rebalanceo.py` — Muestra lo que pasa al cambiar N
 
 ```python
 """
-Demuestra el punto débil del sharding por hash módulo N.
 
 Cuando cambia N, la fórmula hash % N cambia para casi todas las claves:
 la caché se "desordena" y provoca una tormenta de cache miss.
